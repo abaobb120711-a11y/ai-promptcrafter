@@ -5,19 +5,20 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>PromptCrafter AI - 提示词生成工具</title>
   
-  <!-- 引入 Tailwind CSS (样式库) -->
+  <!-- 引入 Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
   
-  <!-- 引入 React 和 React DOM -->
+  <!-- 引入 React 和 ReactDOM -->
   <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
   <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
   
-  <!-- 引入 Babel -->
+  <!-- 引入 Babel 用于解析 JSX -->
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
   <!-- 字体 -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
 
+  <!-- Tailwind 配置 -->
   <script>
     tailwind.config = {
       theme: {
@@ -66,7 +67,9 @@
   <script type="text/babel">
     const { useState, useEffect } = React;
 
-    // --- 1. 图标组件 ---
+    // ==========================================
+    // 1. 图标组件 (SVG)
+    // ==========================================
     const IconKey = ({size=16, className=""}) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><circle cx="7.5" cy="15.5" r="5.5"/><path d="m21 2-9.6 9.6"/><path d="m15.5 7.5 3 3L22 7l-3-3"/></svg>;
     const IconEye = ({size=16, className=""}) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>;
     const IconEyeOff = ({size=16, className=""}) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7c.44 0 .87-.03 1.28-.09"/><line x1="2" x2="22" y1="2" y2="22"/></svg>;
@@ -81,8 +84,11 @@
     const IconChevronDown = ({size=20, className=""}) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="m6 9 6 6 6-6"/></svg>;
     const IconCheckCircle2 = ({size=20, className=""}) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>;
     const IconCircle = ({size=20, className=""}) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><circle cx="12" cy="12" r="10"/></svg>;
+    const IconUserCircle2 = ({size=24, className=""}) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><circle cx="12" cy="12" r="10"/><circle cx="12" cy="10" r="3"/><path d="M7 20.662V19a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v1.662"/></svg>;
 
-    // --- 2. 常量定义 ---
+    // ==========================================
+    // 2. 常量定义 (Prompts & Styles)
+    // ==========================================
     const PROMPTS = {
       COLORING_RANDOM: `你现在是一位顶级的概念艺术家，擅长用简洁而富有想象力的语言描述各种创意场景。
 你的任务是：为我生成指定数量的富有想象力的、多样化的“填色页内容灵感”。
@@ -111,7 +117,19 @@
 1. 画面必须紧扣文案表达的具体功能或作用。
 2. 画面内容必须具象、直观、易理解。
 3. 描述画面内容。如果用户提供了特定的视觉风格描述，请务必将该风格融入到提示词中；如果未提供风格，则只描述内容。
-4. 比例需要的是4：3`
+4. 比例需要的是4：3`,
+
+      AVATAR_GENERATION: `你是一名专业的 Midjourney 提示词设计师，你能够根据用户的身份、名字，以及他们留下的评价内容，推测此类用户在真实社交平台（X、Instagram、LinkedIn、YouTube、小红书）上会使用什么类型的头像。
+
+以下为用户信息：
+身份：{{role}}
+名字：{{name}}
+评价内容：{{review}}
+
+请基于这些信息，为该用户生成三种风格完全不同的头像提示词，比例均为 1:1。三种提示词必须高度差异化，并符合真实社交平台用户的头像偏好。
+
+参考风格库：真实专业头像、生活方式摄影、高级插画、漫画、可爱动物、极简符号、3D卡通、动画风景、赛博科技、极简渐变背景。
+请确保三种提示词风格之间差异非常明显。`
     };
 
     const VISUAL_STYLES = {
@@ -128,11 +146,13 @@
       '抽象渐变波浪风': '抽象渐变波浪风：流动的丝滑渐变曲线（蓝到紫、粉到蓝），柔光、朦胧、现代科技背景，适合作为Hero背景图，整体呈现优雅、未来、科技感。'
     };
 
-    const AppMode = { HOME: 'HOME', COLORING: 'COLORING', FEATURE: 'FEATURE' };
+    const AppMode = { HOME: 'HOME', COLORING: 'COLORING', FEATURE: 'FEATURE', AVATAR: 'AVATAR' };
     const ColoringMode = { RANDOM: 'RANDOM', FROM_TEXT: 'FROM_TEXT' };
     const FeatureMode = { SORA: 'SORA', MIDJOURNEY: 'MIDJOURNEY' };
 
-    // --- 3. API 服务 ---
+    // ==========================================
+    // 3. API 服务
+    // ==========================================
     const generatePrompts = async (apiKey, systemPrompt, userMessage) => {
       if (!apiKey) throw new Error('请先输入您的 API Key。');
       
@@ -198,7 +218,9 @@ The structure must be an array of objects:
       }
     };
 
-    // --- 4. 基础组件 ---
+    // ==========================================
+    // 4. 基础组件
+    // ==========================================
     const Button = ({ children, variant = 'primary', size = 'md', isLoading, className = '', disabled, ...props }) => {
       const baseStyles = "inline-flex items-center justify-center rounded-lg font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed";
       const variants = {
@@ -289,7 +311,11 @@ The structure must be an array of objects:
       );
     };
 
-    // --- 5. 页面组件 ---
+    // ==========================================
+    // 5. 页面组件
+    // ==========================================
+    
+    // --- 填色页 ---
     const ColoringPage = ({ apiKey, onBack }) => {
       const [mode, setMode] = useState(ColoringMode.RANDOM);
       const [step, setStep] = useState('INPUT');
@@ -358,6 +384,7 @@ The structure must be an array of objects:
       );
     };
 
+    // --- Feature 配图页 ---
     const FeaturePage = ({ apiKey, onBack }) => {
       const [mode, setMode] = useState(FeatureMode.SORA);
       const [step, setStep] = useState('INPUT');
@@ -373,7 +400,6 @@ The structure must be an array of objects:
         setLoading(true); setError(null); setStep('LOADING');
         try {
           let styleInstruction = '';
-          // 风格逻辑
           if (styleType === 'CUSTOM') {
              if (customStyleInput.trim()) {
                 styleInstruction = `\n\n【视觉风格要求】：\n请严格按照以下自定义风格描述来生成提示词：\n${customStyleInput.trim()}`;
@@ -479,7 +505,74 @@ The structure must be an array of objects:
       );
     };
 
-    // --- 6. 主程序 ---
+    // --- 用户头像页 (新功能) ---
+    const AvatarPage = ({ apiKey, onBack }) => {
+      const [step, setStep] = useState('INPUT');
+      const [results, setResults] = useState([]);
+      const [role, setRole] = useState('');
+      const [name, setName] = useState('');
+      const [review, setReview] = useState('');
+      const [loading, setLoading] = useState(false);
+      const [error, setError] = useState(null);
+
+      const handleGenerate = async () => {
+        setLoading(true); setError(null); setStep('LOADING');
+        try {
+          const dataInput = `以下为用户信息：\n身份：${role}\n名字：${name}\n评价内容：${review}\n\n请生成三种风格的头像提示词。`;
+          const generatedResults = await generatePrompts(apiKey, PROMPTS.AVATAR_GENERATION, dataInput);
+          setResults(generatedResults);
+          setStep('RESULT');
+        } catch (err) { setError(err.message || '发生错误'); setStep('INPUT'); } finally { setLoading(false); }
+      };
+
+      const reset = () => { setStep('INPUT'); setResults([]); setError(null); setRole(''); setName(''); setReview(''); };
+      const isFormValid = role.trim() && name.trim() && review.trim();
+
+      return (
+        <div className="max-w-4xl mx-auto p-6">
+          <div className="flex items-center gap-4 mb-8">
+            <button onClick={onBack} className="p-2 rounded-full hover:bg-gray-100 transition-colors"><IconArrowLeft className="text-gray-600" /></button>
+            <h1 className="text-3xl font-bold text-gray-900 bg-clip-text text-transparent bg-gradient-to-r from-orange-500 to-pink-500">用户头像生成器</h1>
+          </div>
+          {step === 'INPUT' && (
+            <div className="bg-white rounded-2xl p-8 shadow-lg border border-gray-100 animate-fade-in-up">
+              <div className="space-y-6">
+                <div className="flex items-center gap-2 mb-4">
+                  <IconUserCircle2 className="text-orange-500" size={24} />
+                  <h2 className="text-lg font-semibold text-gray-800">输入用户信息</h2>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div><label className="block text-sm font-medium text-gray-700 mb-2">用户身份</label><input type="text" value={role} onChange={(e) => setRole(e.target.value)} placeholder="例如：资深产品经理、全职妈妈..." className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 outline-none" /></div>
+                  <div><label className="block text-sm font-medium text-gray-700 mb-2">用户名字</label><input type="text" value={name} onChange={(e) => setName(e.target.value)} placeholder="例如：Alice, 张三..." className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 outline-none" /></div>
+                </div>
+                <div><label className="block text-sm font-medium text-gray-700 mb-2">用户评价内容</label><textarea value={review} onChange={(e) => setReview(e.target.value)} placeholder="在此输入该用户留下的评价..." rows={4} className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 outline-none resize-none" /></div>
+              </div>
+              {error && <div className="mt-4 p-4 bg-red-50 text-red-700 rounded-lg border border-red-200">{error}</div>}
+              <div className="mt-8 flex justify-end"><Button onClick={handleGenerate} disabled={!isFormValid} size="lg" className="bg-orange-600 hover:bg-orange-700">生成头像提示词 <IconArrowRight className="ml-2 w-4 h-4" /></Button></div>
+            </div>
+          )}
+          {step === 'LOADING' && (
+            <div className="flex flex-col items-center justify-center py-20 animate-pulse">
+              <div className="w-16 h-16 border-4 border-orange-200 border-t-orange-600 rounded-full animate-spin mb-4"></div>
+              <h3 className="text-xl font-medium text-gray-700">正在分析用户画像...</h3>
+            </div>
+          )}
+          {step === 'RESULT' && (
+            <div className="space-y-6">
+              <ResultDisplay results={results} />
+              <div className="flex justify-between items-center bg-white p-4 rounded-xl shadow border border-gray-100">
+                <Button onClick={reset} variant="secondary"><IconArrowLeft className="mr-2 w-4 h-4" /> 返回重置</Button>
+                <div className="text-sm text-gray-500">已生成 {results.length} 条提示词 (比例 1:1)</div>
+              </div>
+            </div>
+          )}
+        </div>
+      );
+    };
+
+    // ==========================================
+    // 6. 主程序
+    // ==========================================
     const App = () => {
       const [apiKey, setApiKey] = useState('');
       const [currentMode, setCurrentMode] = useState(AppMode.HOME);
@@ -494,20 +587,27 @@ The structure must be an array of objects:
             <h1 className="text-5xl font-extrabold text-gray-900 tracking-tight mb-4">Prompt<span className="text-primary-600">Crafter</span> AI</h1>
             <p className="text-xl text-gray-600 max-w-2xl mx-auto">将您的想法转化为精准的 AI 绘画提示词。请选择一个工具开始。</p>
           </div>
-          <div className="grid md:grid-cols-2 gap-8 max-w-4xl w-full">
+          <div className="grid md:grid-cols-3 gap-6 max-w-6xl w-full">
             <button onClick={() => setCurrentMode(AppMode.COLORING)} className="group relative bg-white p-8 rounded-3xl shadow-xl hover:shadow-2xl transition-all duration-300 border border-gray-100 text-left flex flex-col overflow-hidden">
               <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity"><IconPalette size={120} className="text-purple-600 rotate-12" /></div>
               <div className="bg-purple-100 w-14 h-14 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform"><IconPalette size={28} className="text-purple-600" /></div>
               <h2 className="text-2xl font-bold text-gray-800 mb-2">填色页生图</h2>
-              <p className="text-gray-500">生成清晰、描述性强的填色页提示词。支持随机灵感或基于文案生成。</p>
+              <p className="text-gray-500 text-sm">生成清晰、描述性强的填色页提示词。支持随机灵感或基于文案生成。</p>
               <div className="mt-auto pt-6 flex items-center text-purple-600 font-semibold group-hover:translate-x-2 transition-transform">开始生成 →</div>
             </button>
             <button onClick={() => setCurrentMode(AppMode.FEATURE)} className="group relative bg-white p-8 rounded-3xl shadow-xl hover:shadow-2xl transition-all duration-300 border border-gray-100 text-left flex flex-col overflow-hidden">
               <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity"><IconLayers size={120} className="text-blue-600 -rotate-12" /></div>
               <div className="bg-blue-100 w-14 h-14 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform"><IconLayers size={28} className="text-blue-600" /></div>
-              <h2 className="text-2xl font-bold text-gray-800 mb-2">Feature 配图生图</h2>
-              <p className="text-gray-500">根据产品文案生成 Sora 或 Midjourney 的 Feature 配图提示词。</p>
+              <h2 className="text-2xl font-bold text-gray-800 mb-2">Feature 配图</h2>
+              <p className="text-gray-500 text-sm">根据产品文案生成 Sora 或 Midjourney 的 Feature 配图提示词。</p>
               <div className="mt-auto pt-6 flex items-center text-blue-600 font-semibold group-hover:translate-x-2 transition-transform">开始生成 →</div>
+            </button>
+            <button onClick={() => setCurrentMode(AppMode.AVATAR)} className="group relative bg-white p-8 rounded-3xl shadow-xl hover:shadow-2xl transition-all duration-300 border border-gray-100 text-left flex flex-col overflow-hidden">
+              <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity"><IconUserCircle2 size={120} className="text-orange-500 rotate-6" /></div>
+              <div className="bg-orange-100 w-14 h-14 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform"><IconUserCircle2 size={28} className="text-orange-500" /></div>
+              <h2 className="text-2xl font-bold text-gray-800 mb-2">用户头像生图</h2>
+              <p className="text-gray-500 text-sm">根据用户身份、名字和评价，自动推测并生成符合其人设的头像提示词。</p>
+              <div className="mt-auto pt-6 flex items-center text-orange-600 font-semibold group-hover:translate-x-2 transition-transform">开始生成 →</div>
             </button>
           </div>
           <div className="mt-12 text-sm text-gray-400">Powered by APIMart & Gemini Pro</div>
@@ -520,6 +620,7 @@ The structure must be an array of objects:
           {currentMode === AppMode.HOME && <HomeScreen />}
           {currentMode === AppMode.COLORING && <div className="min-h-screen bg-gray-50 py-12"><ColoringPage apiKey={apiKey} onBack={() => setCurrentMode(AppMode.HOME)} /></div>}
           {currentMode === AppMode.FEATURE && <div className="min-h-screen bg-gray-50 py-12"><FeaturePage apiKey={apiKey} onBack={() => setCurrentMode(AppMode.HOME)} /></div>}
+          {currentMode === AppMode.AVATAR && <div className="min-h-screen bg-gray-50 py-12"><AvatarPage apiKey={apiKey} onBack={() => setCurrentMode(AppMode.HOME)} /></div>}
         </div>
       );
     };
@@ -529,3 +630,4 @@ The structure must be an array of objects:
   </script>
 </body>
 </html>
+
