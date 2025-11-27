@@ -5,14 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>PromptCrafter AI - 提示词生成工具</title>
   
-  <!-- 1. 引入 Tailwind CSS (样式库) -->
+  <!-- 引入 Tailwind CSS (样式库) -->
   <script src="https://cdn.tailwindcss.com"></script>
   
-  <!-- 2. 引入 React 和 React DOM (前端框架) -->
+  <!-- 引入 React 和 React DOM -->
   <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
   <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
   
-  <!-- 3. 引入 Babel (让浏览器能看懂 React 代码) -->
+  <!-- 引入 Babel -->
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
   <!-- 字体 -->
@@ -38,12 +38,10 @@
 
   <style>
     body { background: #f8fafc; }
-    /* 滚动条样式 */
     ::-webkit-scrollbar { width: 8px; height: 8px; }
     ::-webkit-scrollbar-track { background: #f1f1f1; }
     ::-webkit-scrollbar-thumb { background: #c7c7cc; border-radius: 4px; }
     ::-webkit-scrollbar-thumb:hover { background: #a1a1aa; }
-    /* 动画 */
     .animate-fade-in { animation: fadeIn 0.3s ease-out; }
     .animate-fade-in-up { animation: fadeInUp 0.4s ease-out; }
     @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
@@ -65,11 +63,10 @@
 <body>
   <div id="root"></div>
 
-  <!-- React 逻辑代码开始 -->
   <script type="text/babel">
     const { useState, useEffect } = React;
 
-    // --- 1. 图标组件 (SVG) ---
+    // --- 1. 图标组件 ---
     const IconKey = ({size=16, className=""}) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><circle cx="7.5" cy="15.5" r="5.5"/><path d="m21 2-9.6 9.6"/><path d="m15.5 7.5 3 3L22 7l-3-3"/></svg>;
     const IconEye = ({size=16, className=""}) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>;
     const IconEyeOff = ({size=16, className=""}) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7c.44 0 .87-.03 1.28-.09"/><line x1="2" x2="22" y1="2" y2="22"/></svg>;
@@ -82,6 +79,8 @@
     const IconSparkles = ({size=24, className=""}) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/><path d="M5 3v4"/><path d="M9 3v4"/><path d="M3 5h4"/><path d="M3 9h4"/></svg>;
     const IconImage = ({size=24, className=""}) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>;
     const IconChevronDown = ({size=20, className=""}) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="m6 9 6 6 6-6"/></svg>;
+    const IconCheckCircle2 = ({size=20, className=""}) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>;
+    const IconCircle = ({size=20, className=""}) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><circle cx="12" cy="12" r="10"/></svg>;
 
     // --- 2. 常量定义 ---
     const PROMPTS = {
@@ -134,7 +133,10 @@
     const FeatureMode = { SORA: 'SORA', MIDJOURNEY: 'MIDJOURNEY' };
 
     // --- 3. API 服务 ---
-    const JSON_ENFORCEMENT = `
+    const generatePrompts = async (apiKey, systemPrompt, userMessage) => {
+      if (!apiKey) throw new Error('请先输入您的 API Key。');
+      
+      const JSON_ENFORCEMENT = `
 \n\nIMPORTANT SYSTEM OUTPUT INSTRUCTION:
 You must output the result strictly in valid JSON format. 
 The structure must be an array of objects:
@@ -146,9 +148,6 @@ The structure must be an array of objects:
   }
 ]
 `;
-
-    const generatePrompts = async (apiKey, systemPrompt, userMessage) => {
-      if (!apiKey) throw new Error('请先输入您的 API Key。');
       
       const payload = {
         model: "gemini-2.5-pro",
@@ -207,7 +206,6 @@ The structure must be an array of objects:
         secondary: "bg-white text-gray-700 border border-gray-300 hover:bg-gray-50 focus:ring-primary-500 shadow-sm",
       };
       const sizes = { sm: "px-3 py-1.5 text-sm", md: "px-4 py-2 text-base", lg: "px-6 py-3 text-lg" };
-      
       return (
         <button className={`${baseStyles} ${variants[variant]} ${sizes[size]} ${className}`} disabled={disabled || isLoading} {...props}>
           {isLoading ? "处理中..." : children}
@@ -365,7 +363,9 @@ The structure must be an array of objects:
       const [step, setStep] = useState('INPUT');
       const [results, setResults] = useState([]);
       const [textInput, setTextInput] = useState('');
+      const [styleType, setStyleType] = useState('PRESET'); // 'PRESET' | 'CUSTOM'
       const [selectedStyle, setSelectedStyle] = useState('');
+      const [customStyleInput, setCustomStyleInput] = useState('');
       const [loading, setLoading] = useState(false);
       const [error, setError] = useState(null);
 
@@ -373,9 +373,17 @@ The structure must be an array of objects:
         setLoading(true); setError(null); setStep('LOADING');
         try {
           let styleInstruction = '';
-          if (selectedStyle && VISUAL_STYLES[selectedStyle]) {
-            styleInstruction = `\n\n【视觉风格要求】：\n请严格按照以下风格描述来生成提示词：\n${VISUAL_STYLES[selectedStyle]}`;
+          // 风格逻辑
+          if (styleType === 'CUSTOM') {
+             if (customStyleInput.trim()) {
+                styleInstruction = `\n\n【视觉风格要求】：\n请严格按照以下自定义风格描述来生成提示词：\n${customStyleInput.trim()}`;
+             }
+          } else if (styleType === 'PRESET') {
+             if (selectedStyle && VISUAL_STYLES[selectedStyle]) {
+                styleInstruction = `\n\n【视觉风格要求】：\n请严格按照以下风格描述来生成提示词：\n${VISUAL_STYLES[selectedStyle]}`;
+             }
           }
+
           let systemPrompt = mode === FeatureMode.SORA ? PROMPTS.FEATURE_SORA : PROMPTS.FEATURE_MJ;
           let userMessage = `Please generate prompts for the following feature descriptions:\n${textInput}${styleInstruction}`;
           const res = await generatePrompts(apiKey, systemPrompt, userMessage);
@@ -393,27 +401,59 @@ The structure must be an array of objects:
           </div>
           {step === 'INPUT' && (
             <div className="flex gap-4 mb-8">
-              <button onClick={() => setMode(FeatureMode.SORA)} className={`flex-1 p-4 rounded-xl border-2 transition-all flex flex-col items-center gap-2 ${mode === FeatureMode.SORA ? 'border-blue-500 bg-blue-50 text-blue-700' : 'border-gray-200 bg-white text-gray-500 hover:border-blue-200'}`}>
+              <button onClick={() => setMode(FeatureMode.SORA)} className={`flex-1 p-4 rounded-xl border-2 transition-all flex flex-col items-center gap-2 ${mode === FeatureMode.SORA ? 'border-blue-500 bg-blue-50 text-blue-700 shadow-md' : 'border-gray-200 bg-white text-gray-500 hover:border-blue-200 hover:bg-gray-50'}`}>
                 <IconSparkles size={24} /><span className="font-semibold">Sora 生图</span>
               </button>
-              <button onClick={() => setMode(FeatureMode.MIDJOURNEY)} className={`flex-1 p-4 rounded-xl border-2 transition-all flex flex-col items-center gap-2 ${mode === FeatureMode.MIDJOURNEY ? 'border-blue-500 bg-blue-50 text-blue-700' : 'border-gray-200 bg-white text-gray-500 hover:border-blue-200'}`}>
+              <button onClick={() => setMode(FeatureMode.MIDJOURNEY)} className={`flex-1 p-4 rounded-xl border-2 transition-all flex flex-col items-center gap-2 ${mode === FeatureMode.MIDJOURNEY ? 'border-blue-500 bg-blue-50 text-blue-700 shadow-md' : 'border-gray-200 bg-white text-gray-500 hover:border-blue-200 hover:bg-gray-50'}`}>
                 <IconImage size={24} /><span className="font-semibold">Midjourney 生图</span>
               </button>
             </div>
           )}
           {step === 'INPUT' && (
             <div className="bg-white rounded-2xl p-8 shadow-lg border border-gray-100 animate-fade-in-up">
-              <div className="space-y-6">
-                <div className="animate-fade-in">
-                  <label className="block text-sm font-medium text-gray-700 mb-2">选择画面风格</label>
-                  <div className="relative">
-                    <select value={selectedStyle} onChange={(e) => setSelectedStyle(e.target.value)} className="w-full appearance-none px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none bg-white pr-10">
-                      <option value="">默认（仅描述内容）</option>
-                      {Object.keys(VISUAL_STYLES).map((style) => <option key={style} value={style}>{style}</option>)}
-                    </select>
-                    <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none text-gray-500"><IconChevronDown size={20} /></div>
+              <div className="space-y-8">
+                {/* 风格选择区域 */}
+                <div className="animate-fade-in bg-gray-50 p-6 rounded-xl border border-gray-200">
+                  <label className="block text-base font-bold text-gray-800 mb-4 flex items-center gap-2">
+                    <IconSparkles size={18} className="text-blue-500" /> 画面风格设定 (二选一)
+                  </label>
+                  
+                  <div className="flex flex-col gap-4">
+                    {/* 选项 1: 预设风格 */}
+                    <div className={`relative p-4 rounded-lg border-2 transition-all cursor-pointer ${styleType === 'PRESET' ? 'border-blue-500 bg-white shadow-sm ring-1 ring-blue-500' : 'border-transparent hover:bg-gray-100'}`} onClick={() => setStyleType('PRESET')}>
+                      <div className="flex items-center gap-3 mb-3">
+                        {styleType === 'PRESET' ? <IconCheckCircle2 className="text-blue-500" size={20} /> : <IconCircle className="text-gray-400" size={20} />}
+                        <span className={`font-medium ${styleType === 'PRESET' ? 'text-gray-900' : 'text-gray-600'}`}>使用预设风格库</span>
+                      </div>
+                      <div className={`ml-8 transition-opacity ${styleType === 'PRESET' ? 'opacity-100' : 'opacity-40 pointer-events-none'}`}>
+                        <div className="relative">
+                          <select value={selectedStyle} onChange={(e) => setSelectedStyle(e.target.value)} className="w-full appearance-none px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none bg-white pr-10 text-sm" disabled={styleType !== 'PRESET'}>
+                            <option value="">默认（不指定风格，仅描述内容）</option>
+                            {Object.keys(VISUAL_STYLES).map((style) => <option key={style} value={style}>{style}</option>)}
+                          </select>
+                          <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none text-gray-500"><IconChevronDown size={16} /></div>
+                        </div>
+                        {styleType === 'PRESET' && selectedStyle && VISUAL_STYLES[selectedStyle] && (
+                          <p className="mt-2 text-xs text-blue-600 bg-blue-50 p-2 rounded border border-blue-100 animate-fade-in">
+                            预览: {VISUAL_STYLES[selectedStyle].split('：')[1] || VISUAL_STYLES[selectedStyle]}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* 选项 2: 自定义风格 */}
+                    <div className={`relative p-4 rounded-lg border-2 transition-all cursor-pointer ${styleType === 'CUSTOM' ? 'border-blue-500 bg-white shadow-sm ring-1 ring-blue-500' : 'border-transparent hover:bg-gray-100'}`} onClick={() => setStyleType('CUSTOM')}>
+                       <div className="flex items-center gap-3 mb-3">
+                        {styleType === 'CUSTOM' ? <IconCheckCircle2 className="text-blue-500" size={20} /> : <IconCircle className="text-gray-400" size={20} />}
+                        <span className={`font-medium ${styleType === 'CUSTOM' ? 'text-gray-900' : 'text-gray-600'}`}>自定义风格描述</span>
+                      </div>
+                      <div className={`ml-8 transition-opacity ${styleType === 'CUSTOM' ? 'opacity-100' : 'opacity-40 pointer-events-none'}`}>
+                        <input type="text" value={customStyleInput} onChange={(e) => setCustomStyleInput(e.target.value)} placeholder="例如：赛博朋克风格，高对比度，霓虹灯光，电影质感..." className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-sm" disabled={styleType !== 'CUSTOM'} />
+                      </div>
+                    </div>
                   </div>
                 </div>
+
                 <div><label className="block text-sm font-medium text-gray-700 mb-2">功能文案</label><textarea value={textInput} onChange={(e) => setTextInput(e.target.value)} placeholder="在此输入产品功能或文案..." rows={8} className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none resize-none" /></div>
               </div>
               {error && <div className="mt-4 p-4 bg-red-50 text-red-700 rounded-lg border border-red-200">{error}</div>}
@@ -428,7 +468,7 @@ The structure must be an array of objects:
           )}
           {step === 'RESULT' && (
             <div className="space-y-6">
-              <ResultDisplay results={results} />
+               <ResultDisplay results={results} />
               <div className="flex justify-between items-center bg-white p-4 rounded-xl shadow border border-gray-100">
                 <Button onClick={reset} variant="secondary"><IconArrowLeft size={16} className="mr-2" /> 返回重置</Button>
                 <div className="text-sm text-gray-500">已生成 {results.length} 条提示词</div>
@@ -484,7 +524,6 @@ The structure must be an array of objects:
       );
     };
 
-    // --- 启动应用 ---
     const root = ReactDOM.createRoot(document.getElementById('root'));
     root.render(<App />);
   </script>
